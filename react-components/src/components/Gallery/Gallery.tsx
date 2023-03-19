@@ -1,5 +1,5 @@
 import React from "react";
-import { fetchFlickrData, FlickrPhotosResponse } from "../../api/api";
+import { fetchData, PhotosResponse } from "../../api/api";
 import "./Gallery.scss";
 
 interface Props {
@@ -8,7 +8,7 @@ interface Props {
 }
 
 interface State {
-  data: FlickrPhotosResponse | null;
+  data: PhotosResponse | null;
 }
 
 class Gallery extends React.Component<Props, State> {
@@ -32,7 +32,7 @@ class Gallery extends React.Component<Props, State> {
   
     async fetchData() {
       const { searchText, perPage } = this.props;
-      const data = await fetchFlickrData(searchText, perPage);
+      const data = await fetchData(searchText, perPage);
       this.setState({ data });
     }
   

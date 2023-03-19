@@ -1,4 +1,4 @@
-interface FlickrPhoto {
+interface Photo {
   id: string;
   owner: string;
   secret: string;
@@ -14,22 +14,22 @@ interface FlickrPhoto {
   };
 }
 
-interface FlickrPhotosResponse {
+interface PhotosResponse {
   photos: {
     page: number;
     pages: number;
     perpage: number;
     total: number;
-    photo: FlickrPhoto[];
+    photo: Photo[];
   };
 }
 
 const apiKey = "9a1e3efb17626c41c96f0d55637ab401";
 
-async function fetchFlickrData(
+async function fetchData(
   searchText: string,
   perPage: number
-): Promise<FlickrPhotosResponse> {
+): Promise<PhotosResponse> {
   const response = await fetch(
     `https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=${apiKey}&text=${searchText}&per_page=${perPage}&extras=views,description&format=json&nojsoncallback=1`
   );
@@ -37,4 +37,4 @@ async function fetchFlickrData(
   return data;
 }
 
-export { fetchFlickrData, FlickrPhotosResponse };
+export { fetchData, PhotosResponse };

@@ -22,7 +22,6 @@ class Main extends React.Component<{}, MainState> {
   render() {
     return (
       <div>
-        Main
         <SearchBar onSearch={this.handleSearch} />
         <Gallery searchText={this.state.searchTerm} perPage={10} />
       </div>
