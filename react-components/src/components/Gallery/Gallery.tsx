@@ -56,6 +56,9 @@ class Gallery extends React.Component<Props, State> {
               <div className="card-body">
                 <h5 className="card-title">{photo.title}</h5>
                 <p className="card-text">
+                  <small className="text-muted">by {photo.owner}</small>
+                </p>
+                <p className="card-text">
                   <small className="text-muted">Views: {photo.views}</small>
                 </p>
               </div>
