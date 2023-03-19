@@ -1,35 +1,24 @@
-import './Header.scss';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import './Header.scss';
+
+const navLinks = [
+  { to: '/', label: 'Main' },
+  { to: '/about', label: 'About' },
+  { to: '/info', label: 'Info' },
+];
 
 class Header extends React.Component {
+  getNavLinkClassName = ({ isActive }: { isActive: boolean }) => isActive ? "active" : "";
+
   render() {
     return (
       <header>
-        <NavLink
-            to="/"
-            className={({ isActive, isPending }) =>
-                isPending ? "pending" : isActive ? "active" : ""
-            }
-        >
-          Main
-        </NavLink>
-        <NavLink
-          to="/about"
-          className={({ isActive, isPending }) =>
-            isPending ? "pending" : isActive ? "active" : ""
-          }
-        >
-          About
-        </NavLink>
-        <NavLink
-          to="/info"
-          className={({ isActive, isPending }) =>
-            isPending ? "pending" : isActive ? "active" : ""
-          }
-        >
-          Info
-        </NavLink>
+        {navLinks.map((link) => (
+          <NavLink key={link.to} to={link.to} className={this.getNavLinkClassName}>
+            {link.label}
+          </NavLink>
+        ))}
       </header>
     );
   }
