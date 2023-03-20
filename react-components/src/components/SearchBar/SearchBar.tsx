@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import "./SearchBar.scss";
+import React, { Component } from 'react';
+import './SearchBar.scss';
 
 interface SearchBarProps {
   onSearch: (searchTerm: string) => void;
@@ -14,19 +14,19 @@ class SearchBar extends Component<SearchBarProps, SearchBarState> {
     super(props);
 
     this.state = {
-      searchTerm: localStorage.getItem("searchTerm") || "",
+      searchTerm: localStorage.getItem('searchTerm') || '',
     };
   }
 
   componentDidMount() {
-    const savedSearchTerm = localStorage.getItem("searchTerm");
+    const savedSearchTerm = localStorage.getItem('searchTerm');
     if (savedSearchTerm) {
       this.setState({ searchTerm: savedSearchTerm });
     }
   }
 
   componentWillUnmount() {
-    localStorage.setItem("searchTerm", this.state.searchTerm);
+    localStorage.setItem('searchTerm', this.state.searchTerm);
   }
 
   handleSearch = () => {

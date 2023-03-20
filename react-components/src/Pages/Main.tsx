@@ -6,11 +6,11 @@ interface MainState {
   searchTerm: string;
 }
 
-class Main extends React.Component<{}, MainState> {
-  constructor(props: MainState) {
+class Main extends React.Component<React.ComponentPropsWithoutRef<'div'>, MainState> {
+  constructor(props: React.ComponentPropsWithoutRef<'div'>) {
     super(props);
     this.state = {
-        searchTerm: localStorage.getItem("searchTerm") || "hoverla",
+      searchTerm: localStorage.getItem('searchTerm') || 'hoverla',
     };
     this.handleSearch = this.handleSearch.bind(this);
   }

@@ -9,7 +9,7 @@ const navLinks = [
 ];
 
 class Header extends React.Component {
-  getNavLinkClassName = ({ isActive }: { isActive: boolean }) => isActive ? "active" : "";
+  getNavLinkClassName = ({ isActive }: { isActive: boolean }) => (isActive ? 'active' : '');
 
   render() {
     return (
