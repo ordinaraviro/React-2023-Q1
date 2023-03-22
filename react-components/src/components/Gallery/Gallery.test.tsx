@@ -9,34 +9,17 @@ describe('Gallery component', () => {
   });
 
   it('should render gallery items when data is available', async () => {
-    // Create a mock data object with at least one photo
-    const mockData = {
-      photos: {
-        photo: [
-          {
-            id: '1',
-            title: 'Test Photo',
-            owner: 'Test Owner',
-            farm: 1,
-            server: 'test-server',
-            secret: 'test-secret',
-            views: 10,
-          },
-        ],
-      },
-    };
-    
-    // Mock the fetchData function to return the mock data
-    jest.spyOn(require('../../api/api'), 'fetchData').mockResolvedValue(mockData);
-
     render(<Gallery searchText="test" perPage={1} />);
-    
+
     // Wait for the gallery items to be rendered
     const galleryItems = await screen.findAllByRole('img');
     expect(galleryItems).toHaveLength(1);
 
     // Verify that the gallery item contains the expected data
-    expect(galleryItems[0]).toHaveAttribute('src', 'https://farm1.staticflickr.com/test-server/1_test-secret_n.jpg');
+    expect(galleryItems[0]).toHaveAttribute(
+      'src',
+      'https://farm1.staticflickr.com/test-server/1_test-secret_n.jpg'
+    );
     expect(galleryItems[0]).toHaveAttribute('alt', 'Test Photo');
     expect(screen.getByText('Test Photo')).toBeInTheDocument();
     expect(screen.getByText('by Test Owner')).toBeInTheDocument();
