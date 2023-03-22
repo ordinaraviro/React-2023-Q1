@@ -11,8 +11,8 @@
     "lint:fix": "eslint --ext .ts,.tsx src --fix",
     "prettier": "prettier --write \"src/**/*.{js,jsx}\"",
     "start": "react-scripts start",
-    "test": "react-scripts test --coverage",
-    "coverage": "istanbul cover -x '**/*.test.tsx' node_modules/react-scripts/bin/react-scripts.js test -- --coverage",
+    "test": "react-scripts test",
+    "coverage": "react-scripts test --coverage",
     "eject": "react-scripts eject"
   },
   "dependencies": {
@@ -21,6 +21,7 @@
     "react-router-dom": "^6.9.0"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
     "@types/jest": "^29.5.0",
     "@types/react": "^18.0.28",
