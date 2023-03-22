@@ -18,13 +18,6 @@ class SearchBar extends Component<SearchBarProps, SearchBarState> {
     };
   }
 
-  componentDidMount() {
-    const savedSearchTerm = localStorage.getItem('searchTerm');
-    if (savedSearchTerm) {
-      this.setState({ searchTerm: savedSearchTerm });
-    }
-  }
-
   componentWillUnmount() {
     localStorage.setItem('searchTerm', this.state.searchTerm);
   }
