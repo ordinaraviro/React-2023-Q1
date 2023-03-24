@@ -1,6 +1,6 @@
-import SearchBar from '../components/SearchBar/SearchBar';
+import SearchBar from '../../components/SearchBar/SearchBar';
 import React from 'react';
-import Gallery from '../components/Gallery/Gallery';
+import Gallery from '../../components/Gallery/Gallery';
 
 interface MainState {
   searchTerm: string;

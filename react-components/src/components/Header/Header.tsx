@@ -4,8 +4,8 @@ import './Header.scss';
 
 const navLinks = [
   { to: '/', label: 'Main' },
+  { to: '/form', label: 'Form' },
   { to: '/about', label: 'About' },
-  { to: '/info', label: 'Info' },
 ];
 
 class Header extends React.Component {
