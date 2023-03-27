@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { Component } from 'react';
+import './FormPage.scss';
 
-function FormPage() {
-  return <div>FormPage</div>;
+export class FormPage extends Component {
+
+  render = () => (
+    <div>
+      Hello
+    </div>
+  );
 }
-
-export default FormPage;
