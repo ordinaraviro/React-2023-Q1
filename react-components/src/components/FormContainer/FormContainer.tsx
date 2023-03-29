@@ -1,10 +1,16 @@
 import React from 'react';
 
+interface CheckboxOption {
+  value: string;
+  label: string;
+}
+
 export interface FormData {
   text: string;
   date: string;
   dropdown: string;
-  checkbox: boolean;
+  checkboxOptions: CheckboxOption[];
+  selectedCheckboxOptions: string[];
   switcher: boolean;
   file: File | undefined;
 }
@@ -21,7 +27,12 @@ class FormContainer extends React.Component<FormContainerProps, FormData> {
       text: '',
       date: '',
       dropdown: '',
-      checkbox: false,
+      checkboxOptions: [
+        { value: 'news', label: 'News' },
+        { value: 'special offers', label: 'Special offers' },
+        { value: 'update notifications', label: 'Update notifications' },
+      ],
+      selectedCheckboxOptions: [],
       switcher: false,
       file: undefined,
     };
@@ -37,9 +48,14 @@ class FormContainer extends React.Component<FormContainerProps, FormData> {
     this.setState((prevState) => ({ ...prevState, dropdown: value }));
   };
 
-  handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { checked } = event.target;
-    this.setState((prevState) => ({ ...prevState, checkbox: checked }));
+  handleCheckboxOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, checked } = event.target;
+    this.setState((prevState) => {
+      const selectedCheckboxOptions = checked
+        ? [...prevState.selectedCheckboxOptions, value]
+        : prevState.selectedCheckboxOptions.filter((v) => v !== value);
+      return { ...prevState, selectedCheckboxOptions };
+    });
   };
 
   handleSwitcherChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,63 +75,69 @@ class FormContainer extends React.Component<FormContainerProps, FormData> {
   };
 
   render() {
-    const { text, date, dropdown, checkbox, switcher } = this.state;
+    const { text, date, dropdown, checkboxOptions, selectedCheckboxOptions, switcher } = this.state;
 
     return (
       <div>
         <form onSubmit={this.handleSubmit}>
           <label>
-            Text:
+            Image title:
             <input type="text" name="text" value={text} onChange={this.handleInputChange} />
           </label>
           <br />
           <label>
-            Date:
+            Image date:
             <input type="date" name="date" value={date} onChange={this.handleInputChange} />
           </label>
           <br />
           <label>
-            Dropdown:
-            <select name="dropdown" value={dropdown} onChange={this.handleDropdownChange}>
+            Category:
+            <select name="Category" value={dropdown} onChange={this.handleDropdownChange}>
               <option value="">Select an option</option>
-              <option value="option1">Option 1</option>
-              <option value="option2">Option 2</option>
-              <option value="option3">Option 3</option>
+              <option value="People">People</option>
+              <option value="Nature">Nature</option>
+              <option value="Other">Other</option>
             </select>
           </label>
           <br />
           <label>
-            Checkbox:
-            <input
-              type="checkbox"
-              name="checkbox"
-              checked={checkbox}
-              onChange={this.handleCheckboxChange}
-            />
+            Subscribe:
+            {checkboxOptions.map((option) => (
+              <label key={option.value}>
+                {option.label}
+                <input
+                  type="checkbox"
+                  name="checkboxOptions"
+                  value={option.value}
+                  checked={selectedCheckboxOptions.includes(option.value)}
+                  onChange={this.handleCheckboxOptionChange}
+                />
+              </label>
+            ))}
           </label>
           <br />
           <label>
-            Switcher:
+            Access:
             <input
               type="radio"
               name="switcher"
-              value="option1"
+              value="Private"
               checked={switcher}
               onChange={this.handleSwitcherChange}
             />
-            Option 1
+            Private
             <input
               type="radio"
               name="switcher"
-              value="option2"
+              value="Public"
               checked={!switcher}
               onChange={this.handleSwitcherChange}
             />
-            Option 2
+            Public
           </label>
           <br />
           <label>
-            File Upload:
+            Image Upload:
             <input type="file" name="file" onChange={this.handleFileChange} />
           </label>
           <br />

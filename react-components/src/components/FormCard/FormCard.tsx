@@ -11,11 +11,18 @@ class FormCard extends React.Component<CardProps> {
     const imageUrl = formData.file && URL.createObjectURL(formData.file);
     return (
       <div style={{ border: '1px solid black', padding: '10px', marginBottom: '10px' }}>
-        <p>Text: {formData.text}</p>
+        <p>Title: {formData.text}</p>
         <p>Date: {formData.date}</p>
-        <p>Dropdown: {formData.dropdown}</p>
-        <p>Checkbox: {formData.checkbox ? 'Checked' : 'Unchecked'}</p>
-        <p>Switcher: {formData.switcher ? 'Option 1' : 'Option 2'}</p>
+        <p>Category: {formData.dropdown}</p>
+        <p>
+          Subscribes:
+          {formData.checkboxOptions.map((option) => (
+            <span key={option.value}>
+              {formData.selectedCheckboxOptions.includes(option.value) ? option.label : null}
+            </span>
+          ))}
+        </p>
+        <p>Access: {formData.switcher ? 'Private' : 'Public'}</p>
         {imageUrl && (
           <img
             src={imageUrl}
