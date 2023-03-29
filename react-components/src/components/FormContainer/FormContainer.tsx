@@ -1,4 +1,5 @@
 import React from 'react';
+import './FormContainer.scss';
 
 interface CheckboxOption {
   value: string;
@@ -19,7 +20,13 @@ interface FormContainerProps {
   onSubmit: (formData: FormData) => void;
 }
 
-class FormContainer extends React.Component<FormContainerProps, FormData> {
+interface FormContainerState extends FormData {
+  errors: {
+    [key in keyof FormData]?: string;
+  };
+}
+
+class FormContainer extends React.Component<FormContainerProps, FormContainerState> {
   constructor(props: FormContainerProps) {
     super(props);
 
@@ -35,8 +42,40 @@ class FormContainer extends React.Component<FormContainerProps, FormData> {
       selectedCheckboxOptions: [],
       switcher: false,
       file: undefined,
+      errors: {},
     };
   }
+
+  validate = (): boolean => {
+    const errors: {
+      [key in keyof FormData]?: string;
+    } = {};
+    const { text, date, dropdown, selectedCheckboxOptions, file } = this.state;
+
+    if (!text) {
+      errors['text'] = 'Image title is required';
+    }
+
+    if (!date) {
+      errors['date'] = 'Image date is required';
+    }
+
+    if (!dropdown) {
+      errors['dropdown'] = 'Category is required';
+    }
+
+    if (selectedCheckboxOptions.length === 0) {
+      errors['selectedCheckboxOptions'] = 'At least one subscription option is required';
+    }
+
+    if (!file) {
+      errors['file'] = 'Image upload is required';
+    }
+
+    this.setState({ errors });
+
+    return Object.keys(errors).length === 0;
+  };
 
   handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -71,23 +110,41 @@ class FormContainer extends React.Component<FormContainerProps, FormData> {
   handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const { onSubmit } = this.props;
-    onSubmit(this.state);
+    if (this.validate()) {
+      onSubmit(this.state);
+      this.handleReset();
+    }
+  };
+
+  handleReset = () => {
+    this.setState({
+      text: '',
+      date: '',
+      dropdown: '',
+      selectedCheckboxOptions: [],
+      switcher: false,
+      file: undefined,
+      errors: {},
+    });
   };
 
   render() {
-    const { text, date, dropdown, checkboxOptions, selectedCheckboxOptions, switcher } = this.state;
+    const { text, date, dropdown, checkboxOptions, selectedCheckboxOptions, switcher, errors } =
+      this.state;
 
     return (
-      <div>
+      <div className="form-container">
         <form onSubmit={this.handleSubmit}>
           <label>
             Image title:
             <input type="text" name="text" value={text} onChange={this.handleInputChange} />
+            {errors['text'] && <div className="error">{errors['text']}</div>}
           </label>
           <br />
           <label>
             Image date:
             <input type="date" name="date" value={date} onChange={this.handleInputChange} />
+            {errors['date'] && <div className="error">{errors['date']}</div>}
           </label>
           <br />
           <label>
@@ -98,6 +155,7 @@ class FormContainer extends React.Component<FormContainerProps, FormData> {
               <option value="Nature">Nature</option>
               <option value="Other">Other</option>
             </select>
+            {errors['dropdown'] && <div className="error">{errors['dropdown']}</div>}
           </label>
           <br />
           <label>
@@ -114,6 +172,7 @@ class FormContainer extends React.Component<FormContainerProps, FormData> {
                 />
               </label>
             ))}
+            {errors['checkboxOptions'] && <div className="error">{errors['dropdown']}</div>}
           </label>
           <br />
           <label>
