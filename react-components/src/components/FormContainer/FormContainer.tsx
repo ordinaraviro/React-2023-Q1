@@ -172,7 +172,9 @@ class FormContainer extends React.Component<FormContainerProps, FormContainerSta
                 />
               </label>
             ))}
-            {errors['checkboxOptions'] && <div className="error">{errors['dropdown']}</div>}
+            {errors['selectedCheckboxOptions'] && (
+              <div className="error">{errors['selectedCheckboxOptions']}</div>
+            )}
           </label>
           <br />
           <label>
@@ -198,6 +200,7 @@ class FormContainer extends React.Component<FormContainerProps, FormContainerSta
           <label>
             Image Upload:
             <input type="file" name="file" onChange={this.handleFileChange} />
+            {errors['file'] && <div className="error">{errors['file']}</div>}
           </label>
           <br />
           <button type="submit">Submit</button>
