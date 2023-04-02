@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+
+import GalleryCard from './GalleryCard/GalleryCard';
 import { fetchData, PhotosResponse } from '../../api/api';
+
 import './Gallery.scss';
 
 interface Props {
@@ -7,66 +10,31 @@ interface Props {
   perPage: number;
 }
 
-interface State {
-  data: PhotosResponse | null;
-}
+const Gallery: React.FC<Props> = ({ searchText, perPage }) => {
+  const [data, setData] = useState<PhotosResponse | null>(null);
 
-class Gallery extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      data: null,
+  useEffect(() => {
+    const fetchDataAsync = async () => {
+      const result = await fetchData(searchText, perPage);
+      setData(result);
     };
-    this.fetchData = this.fetchData.bind(this);
+
+    fetchDataAsync();
+  }, [searchText, perPage]);
+
+  if (!data) {
+    return <div>Loading...</div>
   }
 
-  async componentDidMount() {
-    this.fetchData();
-  }
+  const photos = data.photos.photo;
 
-  async componentDidUpdate(prevProps: Props) {
-    if (prevProps.searchText !== this.props.searchText) {
-      this.fetchData();
-    }
-  }
-
-  async fetchData() {
-    const { searchText, perPage } = this.props;
-    const data = await fetchData(searchText, perPage);
-    this.setState({ data });
-  }
-
-  render() {
-    const { data } = this.state;
-
-    if (!data) {
-      return <div>Loading...</div>;
-    }
-
-    const photos = data.photos.photo;
-
-    return (
-      <div className="gallery">
+  return (
+    <div className="gallery">
         {photos.map((photo) => (
-          <div className="card" key={photo.id}>
-            <img
-              src={`https://farm${photo.farm}.staticflickr.com/${photo.server}/${photo.id}_${photo.secret}_n.jpg`}
-              alt={photo.title}
-            />
-            <div className="card-body">
-              <h5 className="card-title">{photo.title}</h5>
-              <p className="card-text">
-                <small className="text-muted">by {photo.owner}</small>
-              </p>
-              <p className="card-text">
-                <small className="text-muted">Views: {photo.views}</small>
-              </p>
-            </div>
-          </div>
+          <GalleryCard key={photo.id} photo={photo} />
         ))}
-      </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default Gallery;
