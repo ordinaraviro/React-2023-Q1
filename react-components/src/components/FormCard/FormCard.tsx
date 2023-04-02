@@ -1,7 +1,7 @@
 import React from 'react';
 import { FormData } from '../FormContainer/FormContainer';
 
-interface CardProps {
+export interface CardProps {
   formData: FormData;
 }
 

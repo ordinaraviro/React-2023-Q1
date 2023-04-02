@@ -1,32 +1,21 @@
-import SearchBar from '../../components/SearchBar/SearchBar';
-import React from 'react';
+import React, { useState } from 'react';
+
 import Gallery from '../../components/Gallery/Gallery';
+import SearchBar from '../../components/SearchBar/SearchBar';
 
-interface MainState {
-  searchTerm: string;
-}
+const Main = () => {
+  const [searchTerm, setSearchTerm] = useState<string>(localStorage.getItem('searchTerm') || 'hoverla');
 
-class Main extends React.Component<React.ComponentPropsWithoutRef<'div'>, MainState> {
-  constructor(props: React.ComponentPropsWithoutRef<'div'>) {
-    super(props);
-    this.state = {
-      searchTerm: localStorage.getItem('searchTerm') || 'hoverla',
-    };
-    this.handleSearch = this.handleSearch.bind(this);
+  const handleSearch = (searchTerm: string) => {
+    setSearchTerm(searchTerm);
   }
 
-  handleSearch(searchTerm: string) {
-    this.setState({ searchTerm });
-  }
-
-  render() {
-    return (
-      <div>
-        <SearchBar onSearch={this.handleSearch} />
-        <Gallery searchText={this.state.searchTerm} perPage={10} />
-      </div>
-    );
-  }
+  return (
+    <div>
+    <SearchBar onSearch={handleSearch} />
+    <Gallery searchText={searchTerm} perPage={10} />
+  </div>
+  );
 }
 
 export default Main;

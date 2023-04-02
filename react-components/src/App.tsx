@@ -1,11 +1,13 @@
-import './App.scss';
 import React from 'react';
-import Header from './components/Header/Header';
 import { Routes, Route } from 'react-router-dom';
+
+import Header from './components/Header/Header';
 import About from './Pages/About/About';
 import Main from './Pages/Main/Main';
 import Page404 from './Pages/Page404/Page404';
 import { FormPage } from './Pages/FormPage/FormPage';
+
+import './App.scss';
 
 function App() {
   return (

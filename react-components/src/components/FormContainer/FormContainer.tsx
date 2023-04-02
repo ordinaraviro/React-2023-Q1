@@ -27,48 +27,53 @@ interface FormContainerState extends FormData {
 }
 
 class FormContainer extends React.Component<FormContainerProps, FormContainerState> {
+  textRef = React.createRef<HTMLInputElement>();
+  dateRef = React.createRef<HTMLInputElement>();
+  dropdownRef = React.createRef<HTMLSelectElement>();
+  checkboxRefs = new Map<string, React.RefObject<HTMLInputElement>>();
+  switcherRef = React.createRef<HTMLInputElement>();
+  fileRef = React.createRef<HTMLInputElement>();
+
   constructor(props: FormContainerProps) {
     super(props);
 
     this.state = {
-      text: '',
-      date: '',
-      dropdown: '',
-      checkboxOptions: [
-        { value: 'news', label: 'News' },
-        { value: 'special offers', label: 'Special offers' },
-        { value: 'update notifications', label: 'Update notifications' },
-      ],
-      selectedCheckboxOptions: [],
-      switcher: false,
-      file: undefined,
       errors: {},
     };
+
+    this.checkboxRefs.set('news', React.createRef<HTMLInputElement>());
+    this.checkboxRefs.set('special offers', React.createRef<HTMLInputElement>());
+    this.checkboxRefs.set('update notifications', React.createRef<HTMLInputElement>());
   }
 
   validate = (): boolean => {
     const errors: {
       [key in keyof FormData]?: string;
     } = {};
-    const { text, date, dropdown, selectedCheckboxOptions, file } = this.state;
+    const { textRef, dateRef, dropdownRef, checkboxRefs, fileRef } = this;
 
-    if (!text) {
+    if (!textRef.current?.value) {
       errors['text'] = 'Image title is required';
     }
 
-    if (!date) {
+    if (!dateRef.current?.value) {
       errors['date'] = 'Image date is required';
     }
 
-    if (!dropdown) {
+    if (!dropdownRef.current?.value) {
       errors['dropdown'] = 'Category is required';
     }
+
+    const selectedCheckboxOptions = Array.from(checkboxRefs.values())
+      .filter((ref) => ref.current?.checked)
+      .map((ref) => ref.current?.value)
+      .filter(Boolean);
 
     if (selectedCheckboxOptions.length === 0) {
       errors['selectedCheckboxOptions'] = 'At least one subscription option is required';
     }
 
-    if (!file) {
+    if (!fileRef.current?.files?.[0]) {
       errors['file'] = 'Image upload is required';
     }
 
@@ -77,138 +82,95 @@ class FormContainer extends React.Component<FormContainerProps, FormContainerSta
     return Object.keys(errors).length === 0;
   };
 
-  handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    this.setState((prevState) => ({ ...prevState, [name]: value }));
-  };
-
-  handleDropdownChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const { value } = event.target;
-    this.setState((prevState) => ({ ...prevState, dropdown: value }));
-  };
-
-  handleCheckboxOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { value, checked } = event.target;
-    this.setState((prevState) => {
-      const selectedCheckboxOptions = checked
-        ? [...prevState.selectedCheckboxOptions, value]
-        : prevState.selectedCheckboxOptions.filter((v) => v !== value);
-      return { ...prevState, selectedCheckboxOptions };
-    });
-  };
-
-  handleSwitcherChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { checked } = event.target;
-    this.setState((prevState) => ({ ...prevState, switcher: checked }));
-  };
-
-  handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files && event.target.files[0];
-    this.setState((prevState) => ({ ...prevState, file: file ?? undefined }));
-  };
-
   handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const { onSubmit } = this.props;
     if (this.validate()) {
-      onSubmit(this.state);
-      this.handleReset();
-    }
-  };
+      const formData: FormData = {
+        text: this.textRef.current?.value || '',
+        date: this.dateRef.current?.value || '',
+        dropdown: this.dropdownRef.current?.value || '',
+        checkboxOptions: [
+          { value: 'news', label: 'News' },
+          { value: 'special offers', label: 'Special offers' },
+          { value: 'update notifications', label: 'Update notifications' },
+        ],
+        selectedCheckboxOptions: Array.from(this.checkboxRefs.values())
+          .filter((ref) => ref.current?.checked)
+          .map((ref) => ref.current?.value)
+          .filter(Boolean),
+          switcher: !!this.switcherRef.current?.checked,
+          file: this.fileRef.current?.files?.[0],
+        };
+      
+        onSubmit(formData);
+      }
+    };
 
-  handleReset = () => {
-    this.setState({
-      text: '',
-      date: '',
-      dropdown: '',
-      selectedCheckboxOptions: [],
-      switcher: false,
-      file: undefined,
-      errors: {},
-    });
-  };
-
-  render() {
-    const { text, date, dropdown, checkboxOptions, selectedCheckboxOptions, switcher, errors } =
-      this.state;
-
+    render() {
+    const { errors } = this.state;
     return (
-      <div className="form-container">
-        <form onSubmit={this.handleSubmit}>
-          <label>
-            Image title:
-            <input type="text" name="text" value={text} onChange={this.handleInputChange} />
-            {errors['text'] && <div className="error">{errors['text']}</div>}
-          </label>
-          <br />
-          <label>
-            Image date:
-            <input type="date" name="date" value={date} onChange={this.handleInputChange} />
-            {errors['date'] && <div className="error">{errors['date']}</div>}
-          </label>
-          <br />
-          <label>
-            Category:
-            <select name="Category" value={dropdown} onChange={this.handleDropdownChange}>
-              <option value="">Select an option</option>
-              <option value="People">People</option>
-              <option value="Nature">Nature</option>
-              <option value="Other">Other</option>
-            </select>
-            {errors['dropdown'] && <div className="error">{errors['dropdown']}</div>}
-          </label>
-          <br />
-          <label>
-            Subscribe:
-            {checkboxOptions.map((option) => (
-              <label key={option.value}>
-                {option.label}
-                <input
-                  type="checkbox"
-                  name="checkboxOptions"
-                  value={option.value}
-                  checked={selectedCheckboxOptions.includes(option.value)}
-                  onChange={this.handleCheckboxOptionChange}
-                />
-              </label>
-            ))}
-            {errors['selectedCheckboxOptions'] && (
-              <div className="error">{errors['selectedCheckboxOptions']}</div>
-            )}
-          </label>
-          <br />
-          <label>
-            Access:
-            <input
-              type="radio"
-              name="switcher"
-              value="Private"
-              checked={switcher}
-              onChange={this.handleSwitcherChange}
-            />
-            Private
-            <input
-              type="radio"
-              name="switcher"
-              value="Public"
-              checked={!switcher}
-              onChange={this.handleSwitcherChange}
-            />
-            Public
-          </label>
-          <br />
-          <label>
-            Image Upload:
-            <input type="file" name="file" onChange={this.handleFileChange} />
-            {errors['file'] && <div className="error">{errors['file']}</div>}
-          </label>
-          <br />
-          <button type="submit">Submit</button>
-        </form>
-        <hr />
-      </div>
+      <form className="form-container" onSubmit={this.handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="text-input">Image title:</label>
+          <input type="text" id="text-input" ref={this.textRef} />
+          {errors.text && <div className="error">{errors.text}</div>}
+        </div>
+    
+        <div className="form-group">
+          <label htmlFor="date-input">Image date:</label>
+          <input type="date" id="date-input" ref={this.dateRef} />
+          {errors.date && <div className="error">{errors.date}</div>}
+        </div>
+    
+        <div className="form-group">
+          <label htmlFor="dropdown-select">Category:</label>
+          <select id="dropdown-select" ref={this.dropdownRef}>
+            <option value="">Select a category</option>
+            <option value="nature">Nature</option>
+            <option value="city">City</option>
+            <option value="food">Food</option>
+          </select>
+          {errors.dropdown && <div className="error">{errors.dropdown}</div>}
+        </div>
+    
+        <div className="form-group">
+          <label>Subscription options:</label>
+          {[
+            { value: 'news', label: 'News' },
+            { value: 'special offers', label: 'Special offers' },
+            { value: 'update notifications', label: 'Update notifications' },
+          ].map((option) => (
+            <div key={option.value} className="checkbox-group">
+              <input
+                type="checkbox"
+                id={option.value}
+                value={option.value}
+                ref={this.checkboxRefs.get(option.value)}
+              />
+              <label htmlFor={option.value}>{option.label}</label>
+            </div>
+          ))}
+          {errors.selectedCheckboxOptions && (
+            <div className="error">{errors.selectedCheckboxOptions}</div>
+          )}
+        </div>
+    
+        <div className="form-group">
+          <label htmlFor="switcher-input">Enable sharing:</label>
+          <input type="checkbox" id="switcher-input" ref={this.switcherRef} />
+        </div>
+    
+        <div className="form-group">
+          <label htmlFor="file-input">Image upload:</label>
+          <input type="file" id="file-input" ref={this.fileRef} />
+          {errors.file && <div className="error">{errors.file}</div>}
+        </div>
+    
+        <button type="submit">Submit</button>
+      </form>
     );
-  }
-}
+    }
+    }
 
 export default FormContainer;
