@@ -99,15 +99,15 @@ class FormContainer extends React.Component<FormContainerProps, FormContainerSta
           .filter((ref) => ref.current?.checked)
           .map((ref) => ref.current?.value)
           .filter(Boolean),
-          switcher: !!this.switcherRef.current?.checked,
-          file: this.fileRef.current?.files?.[0],
-        };
-      
-        onSubmit(formData);
-      }
-    };
+        switcher: !!this.switcherRef.current?.checked,
+        file: this.fileRef.current?.files?.[0],
+      };
 
-    render() {
+      onSubmit(formData);
+    }
+  };
+
+  render() {
     const { errors } = this.state;
     return (
       <form className="form-container" onSubmit={this.handleSubmit}>
@@ -116,13 +116,13 @@ class FormContainer extends React.Component<FormContainerProps, FormContainerSta
           <input type="text" id="text-input" ref={this.textRef} />
           {errors.text && <div className="error">{errors.text}</div>}
         </div>
-    
+
         <div className="form-group">
           <label htmlFor="date-input">Image date:</label>
           <input type="date" id="date-input" ref={this.dateRef} />
           {errors.date && <div className="error">{errors.date}</div>}
         </div>
-    
+
         <div className="form-group">
           <label htmlFor="dropdown-select">Category:</label>
           <select id="dropdown-select" ref={this.dropdownRef}>
@@ -133,7 +133,7 @@ class FormContainer extends React.Component<FormContainerProps, FormContainerSta
           </select>
           {errors.dropdown && <div className="error">{errors.dropdown}</div>}
         </div>
-    
+
         <div className="form-group">
           <label>Subscription options:</label>
           {[
@@ -155,22 +155,22 @@ class FormContainer extends React.Component<FormContainerProps, FormContainerSta
             <div className="error">{errors.selectedCheckboxOptions}</div>
           )}
         </div>
-    
+
         <div className="form-group">
           <label htmlFor="switcher-input">Enable sharing:</label>
           <input type="checkbox" id="switcher-input" ref={this.switcherRef} />
         </div>
-    
+
         <div className="form-group">
           <label htmlFor="file-input">Image upload:</label>
           <input type="file" id="file-input" ref={this.fileRef} />
           {errors.file && <div className="error">{errors.file}</div>}
         </div>
-    
+
         <button type="submit">Submit</button>
       </form>
     );
-    }
-    }
+  }
+}
 
 export default FormContainer;

@@ -6,7 +6,7 @@ interface SearchBarProps {
   onSearch: (searchTerm: string) => void;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({onSearch}) => {
+const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const [searchTerm, setSearchTerm] = useState<string>(localStorage.getItem('searchTerm') || '');
 
   useEffect(() => {
@@ -26,7 +26,7 @@ const SearchBar: React.FC<SearchBarProps> = ({onSearch}) => {
       <input type="text" value={searchTerm} onChange={handleChange} />
       <button onClick={handleSearch}>Search</button>
     </div>
-  )
-}
+  );
+};
 
 export default SearchBar;

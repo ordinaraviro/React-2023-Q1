@@ -23,16 +23,16 @@ const Gallery: React.FC<Props> = ({ searchText, perPage }) => {
   }, [searchText, perPage]);
 
   if (!data) {
-    return <div>Loading...</div>
+    return <div>Loading...</div>;
   }
 
   const photos = data.photos.photo;
 
   return (
     <div className="gallery">
-        {photos.map((photo) => (
-          <GalleryCard key={photo.id} photo={photo} />
-        ))}
+      {photos.map((photo) => (
+        <GalleryCard key={photo.id} photo={photo} />
+      ))}
     </div>
   );
 };
