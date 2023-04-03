@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import './FormContainer.scss';
 
 interface CheckboxOption {
@@ -26,31 +26,23 @@ interface FormContainerState extends FormData {
   };
 }
 
-class FormContainer extends React.Component<FormContainerProps, FormContainerState> {
-  textRef = React.createRef<HTMLInputElement>();
-  dateRef = React.createRef<HTMLInputElement>();
-  dropdownRef = React.createRef<HTMLSelectElement>();
-  checkboxRefs = new Map<string, React.RefObject<HTMLInputElement>>();
-  switcherRef = React.createRef<HTMLInputElement>();
-  fileRef = React.createRef<HTMLInputElement>();
+const FormContainer: React.FC<FormContainerProps> = ({ onSubmit }) => {
+  const textRef = useRef<HTMLInputElement>(null);
+  const dateRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLSelectElement>(null);
+  const checkboxRefs = useRef<Map<string, React.RefObject<HTMLInputElement>>>(
+    new Map([
+      ['news', useRef<HTMLInputElement>(null)],
+      ['special offers', useRef<HTMLInputElement>(null)],
+      ['update notifications', useRef<HTMLInputElement>(null)],
+    ])
+  );
+  const switcherRef = useRef<HTMLInputElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [errors, setErrors] = useState<FormContainerState['errors']>({});
 
-  constructor(props: FormContainerProps) {
-    super(props);
-
-    this.state = {
-      errors: {},
-    };
-
-    this.checkboxRefs.set('news', React.createRef<HTMLInputElement>());
-    this.checkboxRefs.set('special offers', React.createRef<HTMLInputElement>());
-    this.checkboxRefs.set('update notifications', React.createRef<HTMLInputElement>());
-  }
-
-  validate = (): boolean => {
-    const errors: {
-      [key in keyof FormData]?: string;
-    } = {};
-    const { textRef, dateRef, dropdownRef, checkboxRefs, fileRef } = this;
+  const validate = useCallback((): boolean => {
+    const errors: FormContainerState['errors'] = {};
 
     if (!textRef.current?.value) {
       errors['text'] = 'Image title is required';
@@ -64,7 +56,7 @@ class FormContainer extends React.Component<FormContainerProps, FormContainerSta
       errors['dropdown'] = 'Category is required';
     }
 
-    const selectedCheckboxOptions = Array.from(checkboxRefs.values())
+    const selectedCheckboxOptions = Array.from(checkboxRefs.current.values())
       .filter((ref) => ref.current?.checked)
       .map((ref) => ref.current?.value)
       .filter(Boolean);
@@ -77,100 +69,101 @@ class FormContainer extends React.Component<FormContainerProps, FormContainerSta
       errors['file'] = 'Image upload is required';
     }
 
-    this.setState({ errors });
+    setErrors(errors);
 
     return Object.keys(errors).length === 0;
-  };
+  }, []);
 
-  handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const { onSubmit } = this.props;
-    if (this.validate()) {
-      const formData: FormData = {
-        text: this.textRef.current?.value || '',
-        date: this.dateRef.current?.value || '',
-        dropdown: this.dropdownRef.current?.value || '',
-        checkboxOptions: [
-          { value: 'news', label: 'News' },
-          { value: 'special offers', label: 'Special offers' },
-          { value: 'update notifications', label: 'Update notifications' },
-        ],
-        selectedCheckboxOptions: Array.from(this.checkboxRefs.values())
-          .filter((ref) => ref.current?.checked)
-          .map((ref) => ref.current?.value)
-          .filter(Boolean),
-        switcher: !!this.switcherRef.current?.checked,
-        file: this.fileRef.current?.files?.[0],
-      };
-
-      onSubmit(formData);
-    }
-  };
-
-  render() {
-    const { errors } = this.state;
-    return (
-      <form className="form-container" onSubmit={this.handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="text-input">Image title:</label>
-          <input type="text" id="text-input" ref={this.textRef} />
-          {errors.text && <div className="error">{errors.text}</div>}
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="date-input">Image date:</label>
-          <input type="date" id="date-input" ref={this.dateRef} />
-          {errors.date && <div className="error">{errors.date}</div>}
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="dropdown-select">Category:</label>
-          <select id="dropdown-select" ref={this.dropdownRef}>
-            <option value="">Select a category</option>
-            <option value="nature">Nature</option>
-            <option value="city">City</option>
-            <option value="food">Food</option>
-          </select>
-          {errors.dropdown && <div className="error">{errors.dropdown}</div>}
-        </div>
-
-        <div className="form-group">
-          <label>Subscription options:</label>
-          {[
+  const handleSubmit = useCallback(
+    (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      if (validate()) {
+        const formData: FormData = {
+          text: textRef.current?.value || '',
+          date: dateRef.current?.value || '',
+          dropdown: dropdownRef.current?.value || '',
+          checkboxOptions: [
             { value: 'news', label: 'News' },
             { value: 'special offers', label: 'Special offers' },
             { value: 'update notifications', label: 'Update notifications' },
-          ].map((option) => (
-            <div key={option.value} className="checkbox-group">
-              <input
-                type="checkbox"
-                id={option.value}
-                value={option.value}
-                ref={this.checkboxRefs.get(option.value)}
-              />
-              <label htmlFor={option.value}>{option.label}</label>
-            </div>
-          ))}
-          {errors.selectedCheckboxOptions && (
-            <div className="error">{errors.selectedCheckboxOptions}</div>
-          )}
-        </div>
+          ],
+          selectedCheckboxOptions: Array.from(checkboxRefs.current.values())
+            .filter((ref) => ref.current?.checked)
+            .map((ref) => ref.current?.value)
+            .filter(Boolean),
+          switcher: !!switcherRef.current?.checked,
+          file: fileRef.current?.files?.[0],
+        };
 
-        <div className="form-group">
-          <label htmlFor="switcher-input">Enable sharing:</label>
-          <input type="checkbox" id="switcher-input" ref={this.switcherRef} />
-        </div>
+        onSubmit(formData);
+      }
+    },
+    [onSubmit, validate]
+  );
 
-        <div className="form-group">
-          <label htmlFor="file-input">Image upload:</label>
-          <input type="file" id="file-input" ref={this.fileRef} />
-          {errors.file && <div className="error">{errors.file}</div>}
-        </div>
+  return (
+    <form className="form-container">
+      <div className="form-group">
+        <label htmlFor="text-input">Image Title</label>
+        <input type="text" id="text-input" ref={textRef} />
+        {errors.text && <span className="error">{errors.text}</span>}
+      </div>
 
-        <button type="submit">Submit</button>
-      </form>
-    );
-  }
-}
+      <div className="form-group">
+        <label htmlFor="date-input">Image Date</label>
+        <input type="date" id="date-input" ref={dateRef} />
+        {errors.date && <span className="error">{errors.date}</span>}
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="dropdown-input">Category</label>
+        <select id="dropdown-input" ref={dropdownRef}>
+          <option value="">Select a category</option>
+          <option value="animals">Animals</option>
+          <option value="nature">Nature</option>
+          <option value="city">City</option>
+        </select>
+        {errors.dropdown && <span className="error">{errors.dropdown}</span>}
+      </div>
+
+      <div className="form-group">
+        <label>Subscription Options</label>
+        {[
+          { value: 'news', label: 'News' },
+          { value: 'special offers', label: 'Special offers' },
+          { value: 'update notifications', label: 'Update notifications' },
+        ].map((option) => (
+          <div key={option.value} className="checkbox-container">
+            <input
+              type="checkbox"
+              id={`checkbox-${option.value}`}
+              value={option.value}
+              ref={checkboxRefs.current.get(option.value)}
+            />
+            <label htmlFor={`checkbox-${option.value}`}>{option.label}</label>
+          </div>
+        ))}
+        {errors.selectedCheckboxOptions && (
+          <span className="error">{errors.selectedCheckboxOptions}</span>
+        )}
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="switcher-input">Switcher</label>
+        <input type="checkbox" id="switcher-input" ref={switcherRef} />
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="file-input">Image Upload</label>
+        <input type="file" id="file-input" ref={fileRef} />
+        {errors.file && <span className="error">{errors.file}</span>}
+      </div>
+
+      <button type="submit" onClick={handleSubmit}>
+        Submit
+      </button>
+    </form>
+  );
+};
 
 export default FormContainer;

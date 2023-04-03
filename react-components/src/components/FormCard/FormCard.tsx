@@ -31,15 +31,10 @@ const FormCard: React.FC<CardProps> = ({ formData }) => {
       </p>
       <p>Access: {formData.switcher ? 'Private' : 'Public'}</p>
       {imageUrl && (
-        <img
-          src={imageUrl}
-          alt="uploaded file"
-          style={{ maxWidth: '200px', maxHeight: '200px' }}
-        />
+        <img src={imageUrl} alt="uploaded file" style={{ maxWidth: '200px', maxHeight: '200px' }} />
       )}
     </div>
   );
 };
 
 export default FormCard;
-
