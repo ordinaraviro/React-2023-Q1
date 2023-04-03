@@ -1,4 +1,7 @@
 import React, { useState, useRef, useCallback } from 'react';
+
+import { validate } from './formValidation';
+
 import './FormContainer.scss';
 
 interface CheckboxOption {
@@ -41,64 +44,35 @@ const FormContainer: React.FC<FormContainerProps> = ({ onSubmit }) => {
   const fileRef = useRef<HTMLInputElement>(null);
   const [errors, setErrors] = useState<FormContainerState['errors']>({});
 
-  const validate = useCallback((): boolean => {
-    const errors: FormContainerState['errors'] = {};
-
-    if (!textRef.current?.value) {
-      errors['text'] = 'Image title is required';
-    }
-
-    if (!dateRef.current?.value) {
-      errors['date'] = 'Image date is required';
-    }
-
-    if (!dropdownRef.current?.value) {
-      errors['dropdown'] = 'Category is required';
-    }
-
-    const selectedCheckboxOptions = Array.from(checkboxRefs.current.values())
-      .filter((ref) => ref.current?.checked)
-      .map((ref) => ref.current?.value)
-      .filter(Boolean);
-
-    if (selectedCheckboxOptions.length === 0) {
-      errors['selectedCheckboxOptions'] = 'At least one subscription option is required';
-    }
-
-    if (!fileRef.current?.files?.[0]) {
-      errors['file'] = 'Image upload is required';
-    }
-
-    setErrors(errors);
-
-    return Object.keys(errors).length === 0;
-  }, []);
-
   const handleSubmit = useCallback(
     (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      if (validate()) {
-        const formData: FormData = {
-          text: textRef.current?.value || '',
-          date: dateRef.current?.value || '',
-          dropdown: dropdownRef.current?.value || '',
-          checkboxOptions: [
-            { value: 'news', label: 'News' },
-            { value: 'special offers', label: 'Special offers' },
-            { value: 'update notifications', label: 'Update notifications' },
-          ],
-          selectedCheckboxOptions: Array.from(checkboxRefs.current.values())
-            .filter((ref) => ref.current?.checked)
-            .map((ref) => ref.current?.value)
-            .filter(Boolean),
-          switcher: !!switcherRef.current?.checked,
-          file: fileRef.current?.files?.[0],
-        };
 
+      const formData: FormData = {
+        text: textRef.current?.value || '',
+        date: dateRef.current?.value || '',
+        dropdown: dropdownRef.current?.value || '',
+        checkboxOptions: [
+          { value: 'news', label: 'News' },
+          { value: 'special offers', label: 'Special offers' },
+          { value: 'update notifications', label: 'Update notifications' },
+        ],
+        selectedCheckboxOptions: Array.from(checkboxRefs.current.values())
+          .filter((ref) => ref.current?.checked)
+          .map((ref) => ref.current?.value)
+          .filter(Boolean),
+        switcher: !!switcherRef.current?.checked,
+        file: fileRef.current?.files?.[0],
+      };
+
+      const errors = validate(formData);
+      setErrors(errors);
+
+      if (Object.keys(errors).length === 0) {
         onSubmit(formData);
       }
     },
-    [onSubmit, validate]
+    [onSubmit]
   );
 
   return (
