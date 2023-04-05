@@ -10,8 +10,7 @@
     "lint": "eslint --ext .ts,.tsx src",
     "lint:fix": "eslint --ext .ts,.tsx src --fix",
     "prettier": "prettier --write \"src/**/*.{js,jsx}\"",
-    "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "test": "vitest run --coverage"
   },
   "dependencies": {
     "node-fetch": "^3.3.1",
