@@ -1,37 +1,30 @@
-import React from 'react';
-import FormCard from '../../components/FormCard/FormCard';
-import FormContainer from '../../components/FormContainer/FormContainer';
-import { FormData } from '../../components/FormContainer/FormContainer';
-import './FormPage.scss';
+import React, { useState } from 'react';
+import Form from '../../components/Form/Form';
+import FormCards from '../../components/Form/FormCards';
 
-interface FormPageState {
-  cards: FormData[];
+interface FormData {
+  name: string;
+  date: string;
+  option: string;
+  checkboxes: boolean[];
+  switcher: string;
+  file: FileList | null;
+  fileUrl?: string;
 }
 
-class FormPage extends React.Component<object, FormPageState> {
-  constructor(props: object) {
-    super(props);
-    this.state = {
-      cards: [],
-    };
-  }
+const FormPage: React.FC = () => {
+  const [cards, setCards] = useState<FormData[]>([]);
 
-  handleFormSubmit = (formData: FormData) => {
-    this.setState((prevState) => ({ cards: [...prevState.cards, formData] }));
+  const onSubmit = (formData: FormData) => {
+    setCards((prevCards) => [...prevCards, formData]);
   };
 
-  render() {
-    const { cards } = this.state;
-    return (
-      <div>
-        <FormContainer onSubmit={this.handleFormSubmit} />
-        <h2>Cards List:</h2>
-        {cards.map((formData, index) => (
-          <FormCard key={index} formData={formData} />
-        ))}
-      </div>
-    );
-  }
-}
+  return (
+    <div>
+      <Form onSubmit={onSubmit} />
+      <FormCards cards={cards} />
+    </div>
+  );
+};
 
-export { FormContainer, FormPage };
+export default FormPage;
