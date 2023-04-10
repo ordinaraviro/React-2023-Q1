@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
-import GalleryCard from './GalleryCard/GalleryCard';
 import { fetchData, PhotosResponse } from '../../api/api';
 
 import './Gallery.scss';
+import ModalCard from './ModalCard/ModalCard';
 
 interface Props {
   searchText: string;
@@ -31,7 +31,7 @@ const Gallery: React.FC<Props> = ({ searchText, perPage }) => {
   return (
     <div className="gallery">
       {photos.map((photo) => (
-        <GalleryCard key={photo.id} photo={photo} />
+        <ModalCard key={photo.id} photo={photo} />
       ))}
     </div>
   );
